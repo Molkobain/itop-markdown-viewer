@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension format="1.0">
+	<extension_code>molkobain-markdown-viewer</extension_code>
+	<company>Molkobain</company>
+	<author><![CDATA[Guillaume Lajarige]]></author>
+	<label><![CDATA[Markdown attributes viewer]]></label>
+	<description><![CDATA[Edit attributes in Markdown, view them as HTML]]></description>
+	<version>1.0.0</version>
+	<release_date>2019-03-20</release_date>
+	<version_description><![CDATA[First version]]></version_description>
+	<itop_version_min>2.4.0</itop_version_min>
+	<status>stable</status>
+	<mandatory>false</mandatory>
+	<more_info_url>https://www.molkobain.com/product-category/itop-extensions/</more_info_url>
+</extension>
