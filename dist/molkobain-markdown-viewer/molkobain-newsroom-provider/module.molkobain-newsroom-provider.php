@@ -14,40 +14,32 @@
 /** @noinspection PhpUnhandledExceptionInspection */
 SetupWebPage::AddModule(
 	__FILE__, // Path to the current file, all other file names are relative to the directory containing this file
-	'molkobain-handy-framework/1.2.4',
+	'molkobain-newsroom-provider/1.0.0',
 	array(
 		// Identification
 		//
-		'label' => 'Molkobain\'s handy framework',
+		'label' => 'Molkobain\'s newsroom provider',
 		'category' => 'tools',
 
 		// Setup
 		//
 		'dependencies' => array(
-			'itop-welcome-itil/2.4.0'
+			'itop-welcome-itil/2.4.0',
+			'molkobain-handy-framework/1.2.4',
 		),
 		'mandatory' => true,
-		'visible' => false,
+		'visible' => true,
 
 		// Components
 		//
 		'datamodel' => array(
-			'core/attributerackunit.class.inc.php',
-		    'common/confighelper.class.inc.php',
-		    'common/stringhelper.class.inc.php',
-		    'common/uihelper.class.inc.php',
-		    'common/ui/togglebutton.class.inc.php',
-		    'console/pageuiextension.class.inc.php',
-            'portal/apis/extensions/portaluiextension.class.inc.php',
+			'common/confighelper.class.inc.php',
+			'core/newsroomprovider.class.inc.php',
 		),
-		'webservice' => array(
-
+		'webservice' => array(),
+		'data.struct' => array(// add your 'structure' definition XML files here,
 		),
-		'data.struct' => array(
-			// add your 'structure' definition XML files here,
-		),
-		'data.sample' => array(
-			// add your sample data XML files here,
+		'data.sample' => array(// add your sample data XML files here,
 		),
 
 		// Documentation
@@ -59,7 +51,7 @@ SetupWebPage::AddModule(
 		//
 		'settings' => array(
 			// Module specific settings go here, if any
-            'enabled' => true,
+			'enabled' => true,
 		),
 	)
 );
