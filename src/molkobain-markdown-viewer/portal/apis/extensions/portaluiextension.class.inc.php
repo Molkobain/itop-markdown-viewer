@@ -10,11 +10,11 @@
 namespace Molkobain\iTop\Extension\MarkdownViewer\Portal\Extension;
 
 use AbstractPortalUIExtension;
-use utils;
 use Dict;
 use MetaModel;
-use Silex\Application;
 use Molkobain\iTop\Extension\MarkdownViewer\Common\Helper\ConfigHelper;
+use Silex\Application;
+use utils;
 
 // Compatibility check as there is no html markup to find the object class before iTop 2.6.0
 if(version_compare(ITOP_VERSION, '2.6.0', '>='))
@@ -93,12 +93,12 @@ if(version_compare(ITOP_VERSION, '2.6.0', '>='))
 			$iImageMaxWidth = (int) MetaModel::GetConfig()->Get('inline_image_max_display_width');
 
 			$sJSInline =
-<<<JS
+				<<<JS
 // Molkobain markdown viewer
 function InstanciateMarkdownViewer(oElem)
 {
-    var iImageMaxWidth = {$iImageMaxWidth};
-    var oAllAttCodes = {$sAllAttCodesAsJSON};
+    var iImageMaxWidth =; {$iImageMaxWidth};
+    var oAllAttCodes =; {$sAllAttCodesAsJSON};
     var bEditMode = (oElem.attr('data-form-mode') !== 'view') ? true : false;
     var sObjClass = oElem.attr('data-object-class');
     

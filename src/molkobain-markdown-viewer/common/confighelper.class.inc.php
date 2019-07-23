@@ -9,8 +9,8 @@
 
 namespace Molkobain\iTop\Extension\MarkdownViewer\Common\Helper;
 
-use MetaModel;
 use DBObject;
+use MetaModel;
 use Molkobain\iTop\Extension\HandyFramework\Common\Helper\ConfigHelper as BaseConfigHelper;
 
 /**
@@ -20,10 +20,10 @@ use Molkobain\iTop\Extension\HandyFramework\Common\Helper\ConfigHelper as BaseCo
  */
 class ConfigHelper extends BaseConfigHelper
 {
-    const MODULE_NAME = 'molkobain-markdown-viewer';
-    const SETTING_CONST_FQCN = 'Molkobain\\iTop\\Extension\\MarkdownViewer\\Common\\Helper\\ConfigHelper';
+	const MODULE_NAME = 'molkobain-markdown-viewer';
+	const SETTING_CONST_FQCN = 'Molkobain\\iTop\\Extension\\MarkdownViewer\\Common\\Helper\\ConfigHelper';
 
-    const DEFAULT_SETTING_MARKDOWN_ATTRIBUTES = array();
+	const DEFAULT_SETTING_MARKDOWN_ATTRIBUTES = array();
 
 	/**
 	 * Returns true if the $oObject has some attributes to render as markdown, false otherwise.
@@ -34,12 +34,12 @@ class ConfigHelper extends BaseConfigHelper
 	 *
 	 * @throws \Exception
 	 */
-    public static function IsConcernedObject(DBObject $oObject)
-    {
-    	$aAttCodes = static::GetAttributeCodesForObject($oObject);
+	public static function IsConcernedObject(DBObject $oObject)
+	{
+		$aAttCodes = static::GetAttributeCodesForObject($oObject);
 
-    	return (!empty($aAttCodes));
-    }
+		return (!empty($aAttCodes));
+	}
 
 	/**
 	 * Returns an array of markdown attribute codes for $oObject.
@@ -50,28 +50,28 @@ class ConfigHelper extends BaseConfigHelper
 	 *
 	 * @throws \Exception
 	 */
-    public static function GetAttributeCodesForObject(DBObject $oObject)
-    {
-	    $sObjClass = get_class($oObject);
-	    $aMarkdownAttributes = static::GetSetting('markdown_attributes');
+	public static function GetAttributeCodesForObject(DBObject $oObject)
+	{
+		$sObjClass = get_class($oObject);
+		$aMarkdownAttributes = static::GetSetting('markdown_attributes');
 
-    	$aAttCodes = array();
-	    if(array_key_exists($sObjClass, $aMarkdownAttributes) && is_array($aMarkdownAttributes[$sObjClass]))
-	    {
-	    	foreach($aMarkdownAttributes[$sObjClass] as $sAttCode)
-		    {
-		    	$oAttDef = MetaModel::GetAttributeDef($sObjClass, $sAttCode);
-		    	// Only add text and html attributes, we don't want caselog, ...
-		    	if(in_array($oAttDef->GetEditClass(), array('Text', 'HTML')))
-			    {
-			    	$aAttCodes[] = $sAttCode;
-			    }
-		    }
-	    	$aAttCodes = $aMarkdownAttributes[$sObjClass];
-	    }
+		$aAttCodes = array();
+		if(array_key_exists($sObjClass, $aMarkdownAttributes) && is_array($aMarkdownAttributes[$sObjClass]))
+		{
+			foreach($aMarkdownAttributes[$sObjClass] as $sAttCode)
+			{
+				$oAttDef = MetaModel::GetAttributeDef($sObjClass, $sAttCode);
+				// Only add text and html attributes, we don't want caselog, ...
+				if(in_array($oAttDef->GetEditClass(), array('Text', 'HTML')))
+				{
+					$aAttCodes[] = $sAttCode;
+				}
+			}
+			$aAttCodes = $aMarkdownAttributes[$sObjClass];
+		}
 
-	    return $aAttCodes;
-    }
+		return $aAttCodes;
+	}
 
 	/**
 	 * Returns an array of all classes / markdown attribute codes.

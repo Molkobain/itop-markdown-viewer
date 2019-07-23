@@ -9,13 +9,13 @@
 
 namespace Molkobain\iTop\Extension\MarkdownViewer\Console\Extension;
 
-use utils;
-use Dict;
-use MetaModel;
 use DBObjectSet;
-use WebPage;
+use Dict;
 use iApplicationUIExtension;
+use MetaModel;
 use Molkobain\iTop\Extension\MarkdownViewer\Common\Helper\ConfigHelper;
+use utils;
+use WebPage;
 
 /**
  * Class ApplicationUIExtension
@@ -24,40 +24,40 @@ use Molkobain\iTop\Extension\MarkdownViewer\Common\Helper\ConfigHelper;
  */
 class ApplicationUIExtension implements iApplicationUIExtension
 {
-    /**
-     * @inheritdoc
-     *
-     * @throws \Exception
-     */
-    public function OnDisplayProperties($oObject, WebPage $oPage, $bEditMode = false)
-    {
-        // Check if enabled
-        if(ConfigHelper::IsEnabled() === false)
-        {
-            return;
-        }
+	/**
+	 * @inheritdoc
+	 *
+	 * @throws \Exception
+	 */
+	public function OnDisplayProperties($oObject, WebPage $oPage, $bEditMode = false)
+	{
+		// Check if enabled
+		if(ConfigHelper::IsEnabled() === false)
+		{
+			return;
+		}
 
-        // Check if object has markdown attributes
-	    if(ConfigHelper::IsConcernedObject($oObject) === false)
-	    {
-	    	return;
-	    }
+		// Check if object has markdown attributes
+		if(ConfigHelper::IsConcernedObject($oObject) === false)
+		{
+			return;
+		}
 
-        $sModuleVersion = utils::GetCompiledModuleVersion(ConfigHelper::GetModuleCode());
-        $sURLBase = utils::GetAbsoluteUrlModulesRoot() . '/' . ConfigHelper::GetModuleCode() . '/';
+		$sModuleVersion = utils::GetCompiledModuleVersion(ConfigHelper::GetModuleCode());
+		$sURLBase = utils::GetAbsoluteUrlModulesRoot() . '/' . ConfigHelper::GetModuleCode() . '/';
 
-        // Add css files
-        // Note: Here we pass the compiled .css file in order to be compatible with iTop 2.5 and earlier (utils::GetCSSFromSASS() refactoring)
-	    $oPage->add_saas('env-' . utils::GetCurrentEnvironment() . '/' . ConfigHelper::GetModuleCode() . '/common/css/markdown-viewer.scss');
+		// Add css files
+		// Note: Here we pass the compiled .css file in order to be compatible with iTop 2.5 and earlier (utils::GetCSSFromSASS() refactoring)
+		$oPage->add_saas('env-' . utils::GetCurrentEnvironment() . '/' . ConfigHelper::GetModuleCode() . '/common/css/markdown-viewer.scss');
 //        $oPage->add_linked_stylesheet($sURLBase . 'common/css/markdown-viewer.css?v=' . $sModuleVersion);
 
-        // Add js files
-	    $oPage->add_linked_script($sURLBase . '/common/lib/showdown/showdown.min.js?v=' . $sModuleVersion);
+		// Add js files
+		$oPage->add_linked_script($sURLBase . '/common/lib/showdown/showdown.min.js?v=' . $sModuleVersion);
 
-	    // Prepare dict entries
-	    $sPreviewIconTooltip = Dict::S('Molkobain:MarkdownViewer:Preview:Button:Show');
-	    $sPreviewTitle = Dict::S('Molkobain:MarkdownViewer:Preview:Title');
-	    $sPreviewCloseLabel = Dict::S('Molkobain:MarkdownViewer:Preview:Button:Close');
+		// Prepare dict entries
+		$sPreviewIconTooltip = Dict::S('Molkobain:MarkdownViewer:Preview:Button:Show');
+		$sPreviewTitle = Dict::S('Molkobain:MarkdownViewer:Preview:Title');
+		$sPreviewCloseLabel = Dict::S('Molkobain:MarkdownViewer:Preview:Button:Close');
 
 		// Prepare JS vars
 		$sEditModeAsString = ($bEditMode) ? 'true' : 'false';
@@ -67,15 +67,15 @@ class ApplicationUIExtension implements iApplicationUIExtension
 
 		// Instantiate widget on object's caselogs
 		$oPage->add_ready_script(
-<<<JS
+			<<<JS
 // Molkobain markdown viewer
 $(document).ready(function(){
     // Initializing widget
     $('.field_container').each(function(){
         var me = $(this);
-        var iImageMaxWidth = {$iImageMaxWidth};
-        var bEditMode = {$sEditModeAsString};
-        var aAttCodes = {$sAttCodesAsJSON};
+        var iImageMaxWidth =; {$iImageMaxWidth};
+        var bEditMode =; {$sEditModeAsString};
+        var aAttCodes =; {$sAttCodesAsJSON};
         var sFieldAttCode = me.attr('data-attcode');
         
         // Stop if not a markdown field
@@ -157,65 +157,65 @@ $(document).ready(function(){
 JS
 		);
 
-        return;
-    }
+		return;
+	}
 
-    /**
-     * @inheritdoc
-     */
-    public function OnDisplayRelations($oObject, WebPage $oPage, $bEditMode = false)
-    {
-        // Do nothing
-    }
+	/**
+	 * @inheritdoc
+	 */
+	public function OnDisplayRelations($oObject, WebPage $oPage, $bEditMode = false)
+	{
+		// Do nothing
+	}
 
-    /**
-     * @inheritdoc
-     */
-    public function OnFormSubmit($oObject, $sFormPrefix = '')
-    {
-        // Do nothing
-    }
+	/**
+	 * @inheritdoc
+	 */
+	public function OnFormSubmit($oObject, $sFormPrefix = '')
+	{
+		// Do nothing
+	}
 
-    /**
-     * @inheritdoc
-     */
-    public function OnFormCancel($sTempId)
-    {
-        // Do nothing
-    }
+	/**
+	 * @inheritdoc
+	 */
+	public function OnFormCancel($sTempId)
+	{
+		// Do nothing
+	}
 
-    /**
-     * @inheritdoc
-     */
-    public function EnumUsedAttributes($oObject)
-    {
-        return array();
-    }
+	/**
+	 * @inheritdoc
+	 */
+	public function EnumUsedAttributes($oObject)
+	{
+		return array();
+	}
 
-    /**
-     * @inheritdoc
-     */
-    public function GetIcon($oObject)
-    {
-        return '';
-    }
+	/**
+	 * @inheritdoc
+	 */
+	public function GetIcon($oObject)
+	{
+		return '';
+	}
 
-    /**
-     * @inheritdoc
-     */
-    public function GetHilightClass($oObject)
-    {
-        // Possible return values are:
-        // HILIGHT_CLASS_CRITICAL, HILIGHT_CLASS_WARNING, HILIGHT_CLASS_OK, HILIGHT_CLASS_NONE
-        return HILIGHT_CLASS_NONE;
-    }
+	/**
+	 * @inheritdoc
+	 */
+	public function GetHilightClass($oObject)
+	{
+		// Possible return values are:
+		// HILIGHT_CLASS_CRITICAL, HILIGHT_CLASS_WARNING, HILIGHT_CLASS_OK, HILIGHT_CLASS_NONE
+		return HILIGHT_CLASS_NONE;
+	}
 
-    /**
-     * @inheritdoc
-     */
-    public function EnumAllowedActions(DBObjectSet $oSet)
-    {
-        // No action
-        return array();
-    }
+	/**
+	 * @inheritdoc
+	 */
+	public function EnumAllowedActions(DBObjectSet $oSet)
+	{
+		// No action
+		return array();
+	}
 }
