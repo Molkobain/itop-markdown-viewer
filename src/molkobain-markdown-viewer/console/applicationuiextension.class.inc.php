@@ -59,15 +59,15 @@ class ApplicationUIExtension implements iApplicationUIExtension
 	    $sPreviewTitle = Dict::S('Molkobain:MarkdownViewer:Preview:Title');
 	    $sPreviewCloseLabel = Dict::S('Molkobain:MarkdownViewer:Preview:Button:Close');
 
-	    // Prepare JS vars
-	    $sEditModeAsString = ($bEditMode) ? 'true' : 'false';
-	    $aAttCodes = ConfigHelper::GetAttributeCodesForObject($oObject);
-	    $sAttCodesAsJSON = json_encode($aAttCodes);
-	    $iImageMaxWidth = (int) MetaModel::GetConfig()->Get('inline_image_max_display_width', 0);
+		// Prepare JS vars
+		$sEditModeAsString = ($bEditMode) ? 'true' : 'false';
+		$aAttCodes = ConfigHelper::GetAttributeCodesForObject($oObject);
+		$sAttCodesAsJSON = json_encode($aAttCodes);
+		$iImageMaxWidth = (int) MetaModel::GetConfig()->Get('inline_image_max_display_width');
 
-        // Instanciate widget on object's caselogs
-        $oPage->add_ready_script(
-<<<EOF
+		// Instantiate widget on object's caselogs
+		$oPage->add_ready_script(
+<<<JS
 // Molkobain markdown viewer
 $(document).ready(function(){
     // Initializing widget
@@ -87,13 +87,14 @@ $(document).ready(function(){
         // Add widget class
         me.addClass('molkobain-markdown-viewer');
         
+        var bEditableAttribute = ((bEditMode === true) && (me.find('.field_value > *:first').hasClass('field_value_container') === true));
         // If not editing, view markdown as html...
-        if(bEditMode === false)
+        if(bEditableAttribute === false)
         {
             // Convert Markdown to HTML
             var oValueElem = me.find('.field_value > *');
+            var sMarkdownValue = oValueElem.text().replace(/\\n\\n/g, '\\n'); // Note: I don't know why but in read only we have to replace double line endings with a single one. Seems to be the HTML rendering of an AttributeText field that adds them on each lines, making the MarkDown rendering false.
             var oConverter = new showdown.Converter();
-            var sMarkdownValue = oValueElem.text();
             var sHTMLValue = oConverter.makeHtml(sMarkdownValue);
             oValueElem.html(sHTMLValue);
             
@@ -127,20 +128,21 @@ $(document).ready(function(){
                 oEvent.preventDefault();
                 
                 // Retrieve value
+                var sMarkdownValue = '';
                 var oInputZoneElem = me.find('.field_input_zone');
                 if(oInputZoneElem.hasClass('field_input_html') === true)
                 {
-                    var sMarkdownValue = $('<div></div>').html(oInputZoneElem.find('textarea[name="attr_' + sFieldAttCode + '"]').val()).text();
+                    sMarkdownValue = $('<div></div>').html(oInputZoneElem.find('textarea[name="attr_' + sFieldAttCode + '"]').val()).text();
                 }
                 else
                 {
-                    var sMarkdownValue = oInputZoneElem.find('textarea[name="attr_' + sFieldAttCode + '"]').val();
+                    sMarkdownValue = oInputZoneElem.find('textarea[name="attr_' + sFieldAttCode + '"]').val();
                 }
                 var oConverter = new showdown.Converter();
 	            var sHTMLValue = oConverter.makeHtml(sMarkdownValue);
 	            
 	            // Show preview
-	            var oDlg = $('<div title="{$sPreviewTitle}" class="mmv-preview-content">'+sHTMLValue+'</div>').dialog({
+	            $('<div title="{$sPreviewTitle}" class="mmv-preview-content">'+sHTMLValue+'</div>').dialog({
 	                modal: true,
 	                minWidth: 500,
 	                maxWidth: window.innerHeight * 0.8,
@@ -152,9 +154,8 @@ $(document).ready(function(){
         }
     });
 });
-EOF
-
-        );
+JS
+		);
 
         return;
     }

@@ -90,10 +90,10 @@ if(version_compare(ITOP_VERSION, '2.6.0', '>='))
 			// Prepare JS vars
 			$aAllAttCodes = ConfigHelper::GetAttributeCodes();
 			$sAllAttCodesAsJSON = json_encode($aAllAttCodes);
-			$iImageMaxWidth = (int) MetaModel::GetConfig()->Get('inline_image_max_display_width', 0);
+			$iImageMaxWidth = (int) MetaModel::GetConfig()->Get('inline_image_max_display_width');
 
 			$sJSInline =
-<<<EOF
+<<<JS
 // Molkobain markdown viewer
 function InstanciateMarkdownViewer(oElem)
 {
@@ -121,13 +121,14 @@ function InstanciateMarkdownViewer(oElem)
         // Add widget class
         me.addClass('molkobain-markdown-viewer');
         
+        var bEditableAttribute = ((bEditMode === true) && (me.find('.form_field_control .form-control-static').length === 0));
         // If not editing, view markdown as html...
-        if(bEditMode === false)
+        if(bEditableAttribute === false)
         {
             // Convert Markdown to HTML
             var oValueElem = me.find('.form_field_control .form-control-static > *');
+            var sMarkdownValue = oValueElem.text().replace(/\\n\\n/g, '\\n'); // Note: I don't know why but in read only we have to replace double line endings with a single one. Seems to be the HTML rendering of an AttributeText field that adds them on each lines, making the MarkDown rendering false.;
             var oConverter = new showdown.Converter();
-            var sMarkdownValue = oValueElem.text();
             var sHTMLValue = oConverter.makeHtml(sMarkdownValue);
             oValueElem.html(sHTMLValue);
             
@@ -162,13 +163,14 @@ function InstanciateMarkdownViewer(oElem)
                 oEvent.preventDefault();
                 
                 // Retrieve value
+                var sMarkdownValue = '';
                 if(me.hasClass('portal_form_field_html') === true)
                 {
-                    var sMarkdownValue = $('<div></div>').html(me.portal_form_field_html('getCurrentValue')).text();
+                    sMarkdownValue = $('<div></div>').html(me.portal_form_field_html('getCurrentValue')).text();
                 }
                 else
                 {
-                    var sMarkdownValue = me.portal_form_field('getCurrentValue');
+                    sMarkdownValue = me.portal_form_field('getCurrentValue');
                 }
                 var oConverter = new showdown.Converter();
 	            var sHTMLValue = oConverter.makeHtml(sMarkdownValue);
@@ -206,7 +208,7 @@ $(document).ready(function(){
         InstanciateMarkdownViewer($(this));
     });
 });
-EOF;
+JS;
 
 			return $sJSInline;
 		}
