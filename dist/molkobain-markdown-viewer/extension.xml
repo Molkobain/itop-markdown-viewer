@@ -5,9 +5,9 @@
 	<author><![CDATA[Guillaume Lajarige]]></author>
 	<label><![CDATA[Markdown attributes viewer]]></label>
 	<description><![CDATA[Easily edit fields in Markdown without any modification to your datamodel!]]></description>
-	<version>1.1.0</version>
+	<version>1.1.1</version>
 	<release_date>2019-07-23</release_date>
-	<version_description><![CDATA[Include "Molkobain's newsroom provider" module to keep administrators informed on new extensions and updates (can be disabled in the conf. file) (iTop 2.6+ only)]]></version_description>
+	<version_description><![CDATA[Fix rendering of line breaks on read-only attributes (preview was ok)]]></version_description>
 	<itop_version_min>2.4.0</itop_version_min>
 	<status>stable</status>
 	<mandatory>false</mandatory>
