@@ -43,7 +43,9 @@ Compatible with iTop 2.4+
 *Note: All dependencies are included in the `dist/` folder, so all you need to do is follow the installation section below.*
 
 ## Downloads
-Stable releases can be found on [Molkobain I/O](https://www.molkobain.com/product/markdown-viewer/).
+Stable releases can be found on the [releases page](https://github.com/Molkobain/itop-markdown-viewer/releases) or on [Molkobain I/O](https://www.molkobain.com/product/markdown-viewer/).
+
+Downloading it directly from the Clone or download will get you the version under development which might be unstable.
 
 ## Installation
 * Unzip the extension
