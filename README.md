@@ -19,10 +19,10 @@ Advanced features support such as headings, emphasis, lists, images, hyperlinks,
 Instant preview of Markdown rendering while editing
 ![Preview while editing](docs/mmv-console-preview-01.png)
 
-Fully compatible with the enhanced portal...
+Fully compatible with the enhanced portal in both visualization...
 ![Portal visualization](docs/mmv-portal-view-01.png)
 
-... in both visualization and edition
+... and edition with instant preview
 ![Portal editing](docs/mmv-portal-edition-01.png)
 ![Portal preview](docs/mmv-portal-preview-01.png)
 
