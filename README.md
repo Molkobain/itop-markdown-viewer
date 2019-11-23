@@ -10,7 +10,7 @@
 * [Change log](CHANGELOG.md)
 
 ## Description
-Easily edit fields in Markdown without any modification to your datamodel!
+Easily edit fields in Markdown without any modification to your datamodel! Perfect for FAQs and many others objects 👌
 
 Advanced features support such as headings, emphasis, lists, images, hyperlinks, highlighting, code formatting...
 
