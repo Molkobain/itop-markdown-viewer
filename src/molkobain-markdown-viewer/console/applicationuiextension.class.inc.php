@@ -73,9 +73,9 @@ $(document).ready(function(){
     // Initializing widget
     $('.field_container').each(function(){
         var me = $(this);
-        var iImageMaxWidth =; {$iImageMaxWidth};
-        var bEditMode =; {$sEditModeAsString};
-        var aAttCodes =; {$sAttCodesAsJSON};
+        var iImageMaxWidth = {$iImageMaxWidth};
+        var bEditMode = {$sEditModeAsString};
+        var aAttCodes = {$sAttCodesAsJSON};
         var sFieldAttCode = me.attr('data-attcode');
         
         // Stop if not a markdown field
