@@ -97,8 +97,8 @@ if(version_compare(ITOP_VERSION, '2.6.0', '>='))
 // Molkobain markdown viewer
 function InstanciateMarkdownViewer(oElem)
 {
-    var iImageMaxWidth =; {$iImageMaxWidth};
-    var oAllAttCodes =; {$sAllAttCodesAsJSON};
+    var iImageMaxWidth = {$iImageMaxWidth};
+    var oAllAttCodes = {$sAllAttCodesAsJSON};
     var bEditMode = (oElem.attr('data-form-mode') !== 'view') ? true : false;
     var sObjClass = oElem.attr('data-object-class');
     
