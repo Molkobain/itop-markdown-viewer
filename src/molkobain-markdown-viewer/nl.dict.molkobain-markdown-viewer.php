@@ -7,7 +7,7 @@
  * Use of this extension is bound by the license you purchased. A license grants you a non-exclusive and non-transferable right to use and incorporate the item in your personal or commercial projects. There are several licenses available (see https://www.molkobain.com/usage-licenses/ for more informations)
  */
 Dict::Add('NL NL', 'Dutch', 'Nederlands', array(
-	'Molkobain:MarkdownViewer:Preview:Button:Show' => 'Show preview~~',
-	'Molkobain:MarkdownViewer:Preview:Button:Close' => 'Close~~',
-	'Molkobain:MarkdownViewer:Preview:Title' => 'Preview~~',
+	'Molkobain:MarkdownViewer:Preview:Button:Show' => 'Toon voorbeeld',
+	'Molkobain:MarkdownViewer:Preview:Button:Close' => 'Sluiten',
+	'Molkobain:MarkdownViewer:Preview:Title' => 'Voorbeeld',
 ));
