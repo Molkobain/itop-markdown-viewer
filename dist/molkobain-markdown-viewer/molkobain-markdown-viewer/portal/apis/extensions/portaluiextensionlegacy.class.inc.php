@@ -21,12 +21,12 @@ use utils;
 if(version_compare(ITOP_VERSION, '2.6.0', '>=') && version_compare(ITOP_VERSION, '2.7', '<') && (ITOP_VERSION !== 'develop'))
 {
 	/**
-	 * Class PortalUIExtension
+	 * Class PortalUIExtensionLegacy
 	 *
 	 * @package Molkobain\iTop\Extension\MarkdownViewer\Portal\Extension
 	 * @since v1.2.0
 	 */
-	class PortalUIExtension extends AbstractPortalUIExtension
+	class PortalUIExtensionLegacy extends AbstractPortalUIExtension
 	{
 		/**
 		 * @inheritdoc

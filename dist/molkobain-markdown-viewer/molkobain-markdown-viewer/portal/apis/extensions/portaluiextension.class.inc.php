@@ -17,7 +17,7 @@ use Symfony\Component\DependencyInjection\Container;
 use utils;
 
 // Protection for iTop 2.6 and older
-if(!class_exists('Molkobain\\iTop\\Extension\\HandyFramework\\Portal\\Extension\\PortalUIExtensionLegacy'))
+if(!class_exists('Molkobain\\iTop\\Extension\\MarkdownViewer\\Portal\\Extension\\PortalUIExtensionLegacy'))
 {
 	/**
 	 * Class PortalUIExtension
