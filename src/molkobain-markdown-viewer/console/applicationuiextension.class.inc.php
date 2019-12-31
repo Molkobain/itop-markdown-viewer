@@ -76,7 +76,13 @@ $(document).ready(function(){
         var iImageMaxWidth = {$iImageMaxWidth};
         var bEditMode = {$sEditModeAsString};
         var aAttCodes = {$sAttCodesAsJSON};
-        var sFieldAttCode = me.attr('data-attcode');
+        var sFieldAttCode = me.attr('data-attribute-code');
+        
+        // iTop 2.6 and earlier copatibility
+        if(sFieldAttCode === undefined)
+        {
+            sFieldAttCode = me.attr('data-attcode');
+        }
         
         // Stop if not a markdown field
         if(aAttCodes.indexOf(sFieldAttCode) < 0)
