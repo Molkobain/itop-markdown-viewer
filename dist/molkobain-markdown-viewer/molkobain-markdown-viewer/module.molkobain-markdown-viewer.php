@@ -14,7 +14,7 @@
 /** @noinspection PhpUnhandledExceptionInspection */
 SetupWebPage::AddModule(
 	__FILE__, // Path to the current file, all other file names are relative to the directory containing this file
-	'molkobain-markdown-viewer/1.2.0',
+	'molkobain-markdown-viewer/1.3.0',
 	array(
 		// Identification
 		//
@@ -56,6 +56,9 @@ SetupWebPage::AddModule(
 			// Module specific settings go here, if any
 			'enabled' => true,
 			'markdown_attributes' => array(),
+			'markdown_options' => array(
+				'tables' => true,
+			),
 		),
 	)
 );

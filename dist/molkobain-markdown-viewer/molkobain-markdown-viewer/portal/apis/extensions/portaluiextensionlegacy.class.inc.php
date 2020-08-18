@@ -92,6 +92,7 @@ if(version_compare(ITOP_VERSION, '2.6.0', '>=') && version_compare(ITOP_VERSION,
 			// Prepare JS vars
 			$aAllAttCodes = ConfigHelper::GetAttributeCodes();
 			$sAllAttCodesAsJSON = json_encode($aAllAttCodes);
+			$sConverterOptionsAsJSON = json_encode(ConfigHelper::GetMarkdownOptions());
 			$iImageMaxWidth = (int) MetaModel::GetConfig()->Get('inline_image_max_display_width');
 
 			$sJSInline =
@@ -130,7 +131,7 @@ function InstanciateMarkdownViewer(oElem)
             // Convert Markdown to HTML
             var oValueElem = me.find('.form_field_control .form-control-static > *');
             var sMarkdownValue = oValueElem.text().replace(/\\n\\n/g, '\\n'); // Note: I don't know why but in read only we have to replace double line endings with a single one. Seems to be the HTML rendering of an AttributeText field that adds them on each lines, making the MarkDown rendering false.;
-            var oConverter = new showdown.Converter();
+            var oConverter = new showdown.Converter({$sConverterOptionsAsJSON});
             var sHTMLValue = oConverter.makeHtml(sMarkdownValue);
             oValueElem.html(sHTMLValue);
             
@@ -174,7 +175,7 @@ function InstanciateMarkdownViewer(oElem)
                 {
                     sMarkdownValue = me.portal_form_field('getCurrentValue');
                 }
-                var oConverter = new showdown.Converter();
+                var oConverter = new showdown.Converter({$sConverterOptionsAsJSON});
 	            var sHTMLValue = oConverter.makeHtml(sMarkdownValue);
 	            
 	            // Show preview
