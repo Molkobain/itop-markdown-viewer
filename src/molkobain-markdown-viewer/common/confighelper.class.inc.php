@@ -24,6 +24,7 @@ class ConfigHelper extends BaseConfigHelper
 	const SETTING_CONST_FQCN = 'Molkobain\\iTop\\Extension\\MarkdownViewer\\Common\\Helper\\ConfigHelper';
 
 	const DEFAULT_SETTING_MARKDOWN_ATTRIBUTES = array();
+	const DEFAULT_SETTING_MARKDOWN_OPTIONS = array();
 
 	/**
 	 * Returns true if the $oObject has some attributes to render as markdown, false otherwise.
@@ -81,5 +82,15 @@ class ConfigHelper extends BaseConfigHelper
 	public static function GetAttributeCodes()
 	{
 		return static::GetSetting('markdown_attributes');
+	}
+
+	/**
+	 * Returns an array of options for the showdown.js converter (eg. allow tables, ...)
+	 *
+	 * @return array
+	 */
+	public static function GetMarkdownOptions()
+	{
+		return static::GetSetting('markdown_options');
 	}
 }

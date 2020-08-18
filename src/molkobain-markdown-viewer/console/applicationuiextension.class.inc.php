@@ -63,6 +63,7 @@ class ApplicationUIExtension implements iApplicationUIExtension
 		$sEditModeAsString = ($bEditMode) ? 'true' : 'false';
 		$aAttCodes = ConfigHelper::GetAttributeCodesForObject($oObject);
 		$sAttCodesAsJSON = json_encode($aAttCodes);
+		$sConverterOptionsAsJSON = json_encode(ConfigHelper::GetMarkdownOptions());
 		$iImageMaxWidth = (int) MetaModel::GetConfig()->Get('inline_image_max_display_width');
 
 		// Instantiate widget on object's caselogs
@@ -100,7 +101,7 @@ $(document).ready(function(){
             // Convert Markdown to HTML
             var oValueElem = me.find('.field_value > *');
             var sMarkdownValue = oValueElem.text().replace(/\\n\\n/g, '\\n'); // Note: I don't know why but in read only we have to replace double line endings with a single one. Seems to be the HTML rendering of an AttributeText field that adds them on each lines, making the MarkDown rendering false.
-            var oConverter = new showdown.Converter();
+            var oConverter = new showdown.Converter({$sConverterOptionsAsJSON});
             var sHTMLValue = oConverter.makeHtml(sMarkdownValue);
             oValueElem.html(sHTMLValue);
             
@@ -144,7 +145,7 @@ $(document).ready(function(){
                 {
                     sMarkdownValue = oInputZoneElem.find('textarea[name="attr_' + sFieldAttCode + '"]').val();
                 }
-                var oConverter = new showdown.Converter();
+                var oConverter = new showdown.Converter({$sConverterOptionsAsJSON});
 	            var sHTMLValue = oConverter.makeHtml(sMarkdownValue);
 	            
 	            // Show preview

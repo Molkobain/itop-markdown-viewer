@@ -56,6 +56,9 @@ SetupWebPage::AddModule(
 			// Module specific settings go here, if any
 			'enabled' => true,
 			'markdown_attributes' => array(),
+			'markdown_options' => array(
+				'tables' => true,
+			),
 		),
 	)
 );
