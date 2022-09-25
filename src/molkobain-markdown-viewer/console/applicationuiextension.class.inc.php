@@ -9,9 +9,8 @@
 
 namespace Molkobain\iTop\Extension\MarkdownViewer\Console\Extension;
 
-use DBObjectSet;
 use Dict;
-use iApplicationUIExtension;
+use AbstractApplicationUIExtension;
 use MetaModel;
 use Molkobain\iTop\Extension\MarkdownViewer\Common\Helper\ConfigHelper;
 use utils;
@@ -22,7 +21,7 @@ use WebPage;
  *
  * @package Molkobain\iTop\Extension\MarkdownViewer\Console\Extension
  */
-class ApplicationUIExtension implements iApplicationUIExtension
+class ApplicationUIExtension extends AbstractApplicationUIExtension
 {
 	/**
 	 * @inheritdoc
@@ -42,6 +41,9 @@ class ApplicationUIExtension implements iApplicationUIExtension
 		{
 			return;
 		}
+
+		$bIsItop27OrOlder = !ConfigHelper::IsRunningiTop30OrNewer();
+		$sIsItop27OrOlderForJS = $bIsItop27OrOlder ? 'true' : 'false';
 
 		$sModuleVersion = utils::GetCompiledModuleVersion(ConfigHelper::GetModuleCode());
 		$sURLBase = utils::GetAbsoluteUrlModulesRoot() . '/' . ConfigHelper::GetModuleCode() . '/';
@@ -66,13 +68,25 @@ class ApplicationUIExtension implements iApplicationUIExtension
 		$sConverterOptionsAsJSON = json_encode(ConfigHelper::GetMarkdownOptions());
 		$iImageMaxWidth = (int) MetaModel::GetConfig()->Get('inline_image_max_display_width');
 
+		// Prepare JS selectors
+		if ($bIsItop27OrOlder) {
+			$sJSSelectorForFieldElement = '.field_container';
+			$sJSSelectorForFieldLabelElement = '.field_label';
+			$sJSSelectorForFieldValueElement = '.field_value';
+		} else {
+			$sJSSelectorForFieldElement = '[data-role="ibo-field"]';
+			$sJSSelectorForFieldLabelElement = '.ibo-field--label';
+			$sJSSelectorForFieldValueElement = '.ibo-field--value';
+		}
+
 		// Instantiate widget on object's caselogs
 		$oPage->add_ready_script(
 			<<<JS
 // Molkobain markdown viewer
 $(document).ready(function(){
     // Initializing widget
-    $('.field_container').each(function(){
+    // Note: .field_container for 2.7, data-role for 3.0+ 
+    $('{$sJSSelectorForFieldElement}').each(function(){
         var me = $(this);
         var iImageMaxWidth = {$iImageMaxWidth};
         var bEditMode = {$sEditModeAsString};
@@ -94,16 +108,19 @@ $(document).ready(function(){
         // Add widget class
         me.addClass('molkobain-markdown-viewer');
         
-        var bEditableAttribute = ((bEditMode === true) && (me.find('.field_value > *:first').hasClass('field_value_container') === true));
+        var bEditableAttribute = ((bEditMode === true) && (me.find('{$sJSSelectorForFieldValueElement} > *:first').hasClass('field_value_container') === true));
         // If not editing, view markdown as html...
         if(bEditableAttribute === false)
         {
-            // Convert Markdown to HTML
-            var oValueElem = me.find('.field_value > *');
+			// Convert Markdown to HTML
+            var oValueElem = me.find('{$sJSSelectorForFieldValueElement} > *');
             var sMarkdownValue = oValueElem.text().replace(/\\n\\n/g, '\\n'); // Note: I don't know why but in read only we have to replace double line endings with a single one. Seems to be the HTML rendering of an AttributeText field that adds them on each lines, making the MarkDown rendering false.
             var oConverter = new showdown.Converter({$sConverterOptionsAsJSON});
             var sHTMLValue = oConverter.makeHtml(sMarkdownValue);
             oValueElem.html(sHTMLValue);
+			
+			// iTop 3.0+, enforce plain text field to be styled with standard HTML rules
+			oValueElem.addClass('ibo-is-html-content');
             
             // Enable image zoom-in
             if(iImageMaxWidth !== 0)
@@ -126,10 +143,16 @@ $(document).ready(function(){
                 .addClass('mmv-preview-icon')
                 .addClass('fa')
                 .addClass('fa-eye')
-                .attr('title', '{$sPreviewIconTooltip}')
-                .qtip({ style: { name: 'molkobain-dark', tip: 'bottomMiddle' }, position: { corner: { target: 'topMiddle', tooltip: 'bottomMiddle' }} });
-            me.find('.field_label').append(oPreviewIconElem);
+                .attr('title', '{$sPreviewIconTooltip}');
+            me.find('{$sJSSelectorForFieldLabelElement}').append(oPreviewIconElem);
             
+			// Add tooltip on icon
+			if ({$sIsItop27OrOlderForJS}) {
+				oPreviewIconElem.qtip({ style: { name: 'molkobain-dark', tip: 'bottomMiddle' }, position: { corner: { target: 'topMiddle', tooltip: 'bottomMiddle' }} });
+			} else {
+				oPreviewIconElem.attr('data-tooltip-content', '{$sPreviewIconTooltip}');
+			}
+				
             // Add preview window
             oPreviewIconElem.on('click', function(oEvent){
                 oEvent.preventDefault();
@@ -149,7 +172,7 @@ $(document).ready(function(){
 	            var sHTMLValue = oConverter.makeHtml(sMarkdownValue);
 	            
 	            // Show preview
-	            $('<div title="{$sPreviewTitle}" class="mmv-preview-content">'+sHTMLValue+'</div>').dialog({
+	            $('<div title="{$sPreviewTitle}" class="mmv-preview-content ibo-is-html-content">'+sHTMLValue+'</div>').dialog({
 	                modal: true,
 	                minWidth: 500,
 	                maxWidth: window.innerHeight * 0.8,
@@ -165,64 +188,5 @@ JS
 		);
 
 		return;
-	}
-
-	/**
-	 * @inheritdoc
-	 */
-	public function OnDisplayRelations($oObject, WebPage $oPage, $bEditMode = false)
-	{
-		// Do nothing
-	}
-
-	/**
-	 * @inheritdoc
-	 */
-	public function OnFormSubmit($oObject, $sFormPrefix = '')
-	{
-		// Do nothing
-	}
-
-	/**
-	 * @inheritdoc
-	 */
-	public function OnFormCancel($sTempId)
-	{
-		// Do nothing
-	}
-
-	/**
-	 * @inheritdoc
-	 */
-	public function EnumUsedAttributes($oObject)
-	{
-		return array();
-	}
-
-	/**
-	 * @inheritdoc
-	 */
-	public function GetIcon($oObject)
-	{
-		return '';
-	}
-
-	/**
-	 * @inheritdoc
-	 */
-	public function GetHilightClass($oObject)
-	{
-		// Possible return values are:
-		// HILIGHT_CLASS_CRITICAL, HILIGHT_CLASS_WARNING, HILIGHT_CLASS_OK, HILIGHT_CLASS_NONE
-		return HILIGHT_CLASS_NONE;
-	}
-
-	/**
-	 * @inheritdoc
-	 */
-	public function EnumAllowedActions(DBObjectSet $oSet)
-	{
-		// No action
-		return array();
 	}
 }
