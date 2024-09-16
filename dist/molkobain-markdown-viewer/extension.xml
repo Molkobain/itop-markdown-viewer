@@ -13,5 +13,5 @@
 	<itop_version_min>2.7.0</itop_version_min>
 	<status>stable</status>
 	<mandatory>false</mandatory>
-	<more_info_url>https://www.molkobain.com/product-category/itop-extensions/</more_info_url>
+	<more_info_url>https://molkobain.github.io/itop-extensions-documentation/molkobain-markdown-viewer</more_info_url>
 </extension>
