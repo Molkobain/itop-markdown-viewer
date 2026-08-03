@@ -42,19 +42,14 @@ class ApplicationUIExtension extends AbstractApplicationUIExtension
 			return;
 		}
 
-		$bIsItop27OrOlder = !ConfigHelper::IsRunningiTop30OrNewer();
-		$sIsItop27OrOlderForJS = $bIsItop27OrOlder ? 'true' : 'false';
-
 		$sModuleVersion = utils::GetCompiledModuleVersion(ConfigHelper::GetModuleCode());
-		$sURLBase = utils::GetAbsoluteUrlModulesRoot() . '/' . ConfigHelper::GetModuleCode() . '/';
+		$sURLBase = ConfigHelper::GetModuleCode() . '/';
 
 		// Add css files
-		// Note: Here we pass the compiled .css file in order to be compatible with iTop 2.5 and earlier (utils::GetCSSFromSASS() refactoring)
 		$oPage->add_saas('env-' . utils::GetCurrentEnvironment() . '/' . ConfigHelper::GetModuleCode() . '/common/css/markdown-viewer.scss');
-//        $oPage->add_linked_stylesheet($sURLBase . 'common/css/markdown-viewer.css?v=' . $sModuleVersion);
 
 		// Add js files
-		$oPage->add_linked_script($sURLBase . '/common/lib/showdown/showdown.min.js?v=' . $sModuleVersion);
+		$oPage->LinkScriptFromModule($sURLBase . '/common/lib/showdown/showdown.min.js?v=' . $sModuleVersion);
 
 		// Prepare dict entries
 		$sPreviewIconTooltip = Dict::S('Molkobain:MarkdownViewer:Preview:Button:Show');
@@ -69,15 +64,9 @@ class ApplicationUIExtension extends AbstractApplicationUIExtension
 		$iImageMaxWidth = (int) MetaModel::GetConfig()->Get('inline_image_max_display_width');
 
 		// Prepare JS selectors
-		if ($bIsItop27OrOlder) {
-			$sJSSelectorForFieldElement = '.field_container';
-			$sJSSelectorForFieldLabelElement = '.field_label';
-			$sJSSelectorForFieldValueElement = '.field_value';
-		} else {
-			$sJSSelectorForFieldElement = '[data-role="ibo-field"]';
-			$sJSSelectorForFieldLabelElement = '.ibo-field--label';
-			$sJSSelectorForFieldValueElement = '.ibo-field--value';
-		}
+        $sJSSelectorForFieldElement = '[data-role="ibo-field"]';
+        $sJSSelectorForFieldLabelElement = '.ibo-field--label';
+        $sJSSelectorForFieldValueElement = '.ibo-field--value';
 
 		// Instantiate widget on object's caselogs
 		$oPage->add_ready_script(
@@ -147,11 +136,7 @@ $(document).ready(function(){
             me.find('{$sJSSelectorForFieldLabelElement}').append(oPreviewIconElem);
             
 			// Add tooltip on icon
-			if ({$sIsItop27OrOlderForJS}) {
-				oPreviewIconElem.qtip({ style: { name: 'molkobain-dark', tip: 'bottomMiddle' }, position: { corner: { target: 'topMiddle', tooltip: 'bottomMiddle' }} });
-			} else {
-				oPreviewIconElem.attr('data-tooltip-content', '{$sPreviewIconTooltip}');
-			}
+			oPreviewIconElem.attr('data-tooltip-content', '{$sPreviewIconTooltip}');
 				
             // Add preview window
             oPreviewIconElem.on('click', function(oEvent){

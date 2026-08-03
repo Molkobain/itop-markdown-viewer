@@ -14,7 +14,7 @@
 /** @noinspection PhpUnhandledExceptionInspection */
 SetupWebPage::AddModule(
 	__FILE__, // Path to the current file, all other file names are relative to the directory containing this file
-	'molkobain-markdown-viewer/1.4.0',
+	'molkobain-markdown-viewer/1.5.0',
 	array(
 		// Identification
 		//
@@ -24,8 +24,9 @@ SetupWebPage::AddModule(
 		// Setup
 		//
 		'dependencies' => array(
-			'molkobain-handy-framework/1.3.0',
-			'molkobain-newsroom-provider/1.0.1',
+            'itop-structure/3.2.0',
+			'molkobain-handy-framework/1.11.0',
+			'molkobain-newsroom-provider/1.8.0',
 		),
 		'mandatory' => false,
 		'visible' => true,
@@ -35,8 +36,6 @@ SetupWebPage::AddModule(
 		'datamodel' => array(
 			'common/confighelper.class.inc.php',
 			'console/applicationuiextension.class.inc.php',
-			// Important: Legacy class MUST be loaded before the standard.
-			'portal/apis/extensions/portaluiextensionlegacy.class.inc.php',
 			'portal/apis/extensions/portaluiextension.class.inc.php',
 		),
 		'webservice' => array(),
