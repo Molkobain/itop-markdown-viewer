@@ -11,7 +11,7 @@ namespace Molkobain\iTop\Extension\MarkdownViewer\Common\Helper;
 
 use DBObject;
 use MetaModel;
-use Molkobain\iTop\Extension\HandyFramework\Common\Helper\ConfigHelper as BaseConfigHelper;
+use Molkobain\iTop\Extension\HandyFramework\Helper\ConfigHelper as BaseConfigHelper;
 
 /**
  * Class ConfigHelper
