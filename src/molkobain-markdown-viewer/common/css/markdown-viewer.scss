@@ -7,7 +7,12 @@
  */
 
 /* Variables from iTop */
-@import '../datamodels/2.x/itop-portal-base/portal/public/css/variables.scss';
+/* Note: Requires iTop 3.2.1+ for the core common SCSS layer (N°7793), which is shared by the backoffice and the portal. */
+/*       Resolved from the iTop /css folder, always added as an import path by utils::GetCSSFromSASS(). */
+@import 'common/utils/variables/all';
+
+/* Legacy bootstrap variable, mapped the same way the iTop 3.3 portal maps it in its own variables.scss */
+$gray-dark: $common-color-grey-700 !default;
 
 .molkobain-markdown-viewer{
 	.mmv-preview-icon,
