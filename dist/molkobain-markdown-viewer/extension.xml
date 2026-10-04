@@ -5,11 +5,15 @@
 	<author><![CDATA[Guillaume Lajarige]]></author>
 	<label><![CDATA[Markdown attributes viewer]]></label>
 	<description><![CDATA[Easily edit fields in Markdown without any modification to your datamodel!]]></description>
-	<version>1.5.0</version>
-	<release_date>2026-08-03</release_date>
+	<version>1.6.0</version>
+	<release_date>2026-10-04</release_date>
 	<version_description><![CDATA[
-  * Add compatibility with iTop 3.3+
-  * Change iTop min. version 3.2.0]]></version_description>
+  * Fix rendering of HTML attributes (edited with the rich text editor) which were rendered on a single line
+  * Fix security issue (XSS): HTML generated from the Markdown is now sanitized with DOMPurify, following the rules of the HTML sanitizer configured in iTop (`html_sanitizer` parameter)
+  * Fix preview of HTML attributes not showing the last changes when opened right after typing
+  * Fix paragraphs of plain text attributes being merged when their line endings are not CRLF (eg. value set through the REST API or an import)
+  * Fix invalid classes / attributes in the `markdown_attributes` parameter breaking the display, they are now ignored
+]]></version_description>
 	<itop_version_min>3.2.0</itop_version_min>
 	<status>stable</status>
 	<mandatory>false</mandatory>
