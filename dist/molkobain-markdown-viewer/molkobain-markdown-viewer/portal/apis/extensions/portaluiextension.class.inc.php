@@ -63,7 +63,9 @@ if(!class_exists('Molkobain\\iTop\\Extension\\MarkdownViewer\\Portal\\Extension\
 			$sURLBase = utils::GetAbsoluteUrlModulesRoot() . '/' . ConfigHelper::GetModuleCode() . '/';
 
 			$aJSFiles = array(
-				$sURLBase . '/common/lib/showdown/showdown.min.js?v=' . $sModuleVersion,
+				$sURLBase . 'common/lib/showdown/showdown.min.js?v=' . $sModuleVersion,
+				$sURLBase . 'common/lib/dompurify/purify.min.js?v=' . $sModuleVersion,
+				$sURLBase . 'common/js/markdown-viewer.js?v=' . $sModuleVersion,
 			);
 
 			return $aJSFiles;
@@ -88,9 +90,9 @@ if(!class_exists('Molkobain\\iTop\\Extension\\MarkdownViewer\\Portal\\Extension\
 			$sPreviewCloseLabel = Dict::S('Molkobain:MarkdownViewer:Preview:Button:Close');
 
 			// Prepare JS vars
-			$aAllAttCodes = ConfigHelper::GetAttributeCodes();
-			$sAllAttCodesAsJSON = json_encode($aAllAttCodes);
+			$sAllAttFormatsAsJSON = json_encode(ConfigHelper::GetAttributeFormats(), JSON_FORCE_OBJECT);
 			$sConverterOptionsAsJSON = json_encode(ConfigHelper::GetMarkdownOptions());
+			$sSanitizerRulesAsJSON = json_encode(ConfigHelper::GetHTMLSanitizerRules());
 			$iImageMaxWidth = (int) MetaModel::GetConfig()->Get('inline_image_max_display_width');
 
 			$sJSInline =
@@ -99,12 +101,14 @@ if(!class_exists('Molkobain\\iTop\\Extension\\MarkdownViewer\\Portal\\Extension\
 function InstanciateMarkdownViewer(oElem)
 {
     var iImageMaxWidth = {$iImageMaxWidth};
-    var oAllAttCodes = {$sAllAttCodesAsJSON};
+    var oAllAttFormats = {$sAllAttFormatsAsJSON};
+    var oConverterOptions = {$sConverterOptionsAsJSON};
+    var oSanitizerRules = {$sSanitizerRulesAsJSON};
     var bEditMode = (oElem.attr('data-form-mode') !== 'view') ? true : false;
     var sObjClass = oElem.attr('data-object-class');
     
     // Stop if object not concerned
-    if(oAllAttCodes.hasOwnProperty(sObjClass) === false)
+    if(oAllAttFormats.hasOwnProperty(sObjClass) === false)
     {
         return;
     }
@@ -114,10 +118,11 @@ function InstanciateMarkdownViewer(oElem)
         var sFieldAttCode = me.attr('data-field-id');
         
         // Stop if not a markdown field
-        if(oAllAttCodes[sObjClass].indexOf(sFieldAttCode) < 0)
+        if(oAllAttFormats[sObjClass].hasOwnProperty(sFieldAttCode) === false)
         {
             return;
         }
+        var sFieldFormat = oAllAttFormats[sObjClass][sFieldAttCode];
         
         // Add widget class
         me.addClass('molkobain-markdown-viewer');
@@ -127,23 +132,12 @@ function InstanciateMarkdownViewer(oElem)
         if(bEditableAttribute === false)
         {
             // Convert Markdown to HTML
-            var oValueElem = me.find('.form_field_control .form-control-static > *');
-            var sMarkdownValue = oValueElem.text().replace(/\\n\\n/g, '\\n'); // Note: I don't know why but in read only we have to replace double line endings with a single one. Seems to be the HTML rendering of an AttributeText field that adds them on each lines, making the MarkDown rendering false.;
-            var oConverter = new showdown.Converter({$sConverterOptionsAsJSON});
-            var sHTMLValue = oConverter.makeHtml(sMarkdownValue);
-            oValueElem.html(sHTMLValue);
+            var oValueElem = me.find('.form_field_control .form-control-static > *').first();
+            var sMarkdownValue = MolkobainMarkdownViewer.GetMarkdownFromDisplayedValue(oValueElem, sFieldFormat);
+            oValueElem.empty().append(MolkobainMarkdownViewer.MakeHtml(sMarkdownValue, oConverterOptions, oSanitizerRules));
             
             // Enable image zoom-in
-            if(iImageMaxWidth !== 0)
-            {
-	            oValueElem.find('img').each(function() {
-					if ($(this).width() > iImageMaxWidth)
-					{
-						$(this).css({'max-width': iImageMaxWidth + 'px', width: '', height: '', 'max-height': ''});
-					}
-					$(this).addClass('inline-image').attr('href', $(this).attr('src'));
-				}).magnificPopup({type: 'image', closeOnContentClick: true });
-			}
+            MolkobainMarkdownViewer.EnableImageZoom(oValueElem, iImageMaxWidth);
         }
         // ... otherwise show preview mode
         else
@@ -164,17 +158,8 @@ function InstanciateMarkdownViewer(oElem)
                 oEvent.preventDefault();
                 
                 // Retrieve value
-                var sMarkdownValue = '';
-                if(me.hasClass('portal_form_field_html') === true)
-                {
-                    sMarkdownValue = $('<div></div>').html(me.portal_form_field_html('getCurrentValue')).text();
-                }
-                else
-                {
-                    sMarkdownValue = me.portal_form_field('getCurrentValue');
-                }
-                var oConverter = new showdown.Converter({$sConverterOptionsAsJSON});
-	            var sHTMLValue = oConverter.makeHtml(sMarkdownValue);
+                var oInputElem = me.find('.form_field_control textarea').first();
+                var sMarkdownValue = MolkobainMarkdownViewer.GetMarkdownFromEditedValue(oInputElem, sFieldFormat);
 	            
 	            // Show preview
                 var oModalElem = $('#modal-for-alert')
@@ -185,7 +170,7 @@ function InstanciateMarkdownViewer(oElem)
                     .addClass('mmv-preview-content')
                     .append( $('<div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">{$sPreviewCloseLabel}</button></div>') );
                 oModalElem.find('.modal-title').text('{$sPreviewTitle}');
-				oModalElem.find('.modal-body').html(sHTMLValue);
+				oModalElem.find('.modal-body').empty().append(MolkobainMarkdownViewer.MakeHtml(sMarkdownValue, oConverterOptions, oSanitizerRules));
 				oModalElem.modal('show');
             });
         }

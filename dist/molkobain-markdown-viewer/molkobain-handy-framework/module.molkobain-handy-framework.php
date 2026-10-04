@@ -14,7 +14,7 @@
 /** @noinspection PhpUnhandledExceptionInspection */
 SetupWebPage::AddModule(
 	__FILE__, // Path to the current file, all other file names are relative to the directory containing this file
-	'molkobain-handy-framework/1.11.0',
+	'molkobain-handy-framework/1.12.0',
 	array(
 		// Identification
 		//
@@ -24,7 +24,7 @@ SetupWebPage::AddModule(
 		// Setup
 		//
 		'dependencies' => array(
-			'itop-structure/3.2.0', // Ensure installation on iTop 3.2+ only
+			'itop-structure/3.2.1', // Ensure installation on iTop 3.2.1+ only
 		),
 		'mandatory' => true,
 		'visible' => false,

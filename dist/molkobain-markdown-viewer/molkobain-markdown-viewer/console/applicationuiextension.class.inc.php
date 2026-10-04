@@ -49,7 +49,9 @@ class ApplicationUIExtension extends AbstractApplicationUIExtension
 		$oPage->add_saas('env-' . utils::GetCurrentEnvironment() . '/' . ConfigHelper::GetModuleCode() . '/common/css/markdown-viewer.scss');
 
 		// Add js files
-		$oPage->LinkScriptFromModule($sURLBase . '/common/lib/showdown/showdown.min.js?v=' . $sModuleVersion);
+		$oPage->LinkScriptFromModule($sURLBase . 'common/lib/showdown/showdown.min.js?v=' . $sModuleVersion);
+		$oPage->LinkScriptFromModule($sURLBase . 'common/lib/dompurify/purify.min.js?v=' . $sModuleVersion);
+		$oPage->LinkScriptFromModule($sURLBase . 'common/js/markdown-viewer.js?v=' . $sModuleVersion);
 
 		// Prepare dict entries
 		$sPreviewIconTooltip = Dict::S('Molkobain:MarkdownViewer:Preview:Button:Show');
@@ -58,9 +60,9 @@ class ApplicationUIExtension extends AbstractApplicationUIExtension
 
 		// Prepare JS vars
 		$sEditModeAsString = ($bEditMode) ? 'true' : 'false';
-		$aAttCodes = ConfigHelper::GetAttributeCodesForObject($oObject);
-		$sAttCodesAsJSON = json_encode($aAttCodes);
+		$sAttFormatsAsJSON = json_encode(ConfigHelper::GetAttributeFormatsForObject($oObject), JSON_FORCE_OBJECT);
 		$sConverterOptionsAsJSON = json_encode(ConfigHelper::GetMarkdownOptions());
+		$sSanitizerRulesAsJSON = json_encode(ConfigHelper::GetHTMLSanitizerRules());
 		$iImageMaxWidth = (int) MetaModel::GetConfig()->Get('inline_image_max_display_width');
 
 		// Prepare JS selectors
@@ -79,7 +81,9 @@ $(document).ready(function(){
         var me = $(this);
         var iImageMaxWidth = {$iImageMaxWidth};
         var bEditMode = {$sEditModeAsString};
-        var aAttCodes = {$sAttCodesAsJSON};
+        var oAttFormats = {$sAttFormatsAsJSON};
+        var oConverterOptions = {$sConverterOptionsAsJSON};
+        var oSanitizerRules = {$sSanitizerRulesAsJSON};
         var sFieldAttCode = me.attr('data-attribute-code');
         
         // iTop 2.6 and earlier copatibility
@@ -89,10 +93,11 @@ $(document).ready(function(){
         }
         
         // Stop if not a markdown field
-        if(aAttCodes.indexOf(sFieldAttCode) < 0)
+        if(oAttFormats.hasOwnProperty(sFieldAttCode) === false)
         {
             return;
         }
+        var sFieldFormat = oAttFormats[sFieldAttCode];
         
         // Add widget class
         me.addClass('molkobain-markdown-viewer');
@@ -102,26 +107,15 @@ $(document).ready(function(){
         if(bEditableAttribute === false)
         {
 			// Convert Markdown to HTML
-            var oValueElem = me.find('{$sJSSelectorForFieldValueElement} > *');
-            var sMarkdownValue = oValueElem.text().replace(/\\n\\n/g, '\\n'); // Note: I don't know why but in read only we have to replace double line endings with a single one. Seems to be the HTML rendering of an AttributeText field that adds them on each lines, making the MarkDown rendering false.
-            var oConverter = new showdown.Converter({$sConverterOptionsAsJSON});
-            var sHTMLValue = oConverter.makeHtml(sMarkdownValue);
-            oValueElem.html(sHTMLValue);
+            var oValueElem = me.find('{$sJSSelectorForFieldValueElement} > *').first();
+            var sMarkdownValue = MolkobainMarkdownViewer.GetMarkdownFromDisplayedValue(oValueElem, sFieldFormat);
+            oValueElem.empty().append(MolkobainMarkdownViewer.MakeHtml(sMarkdownValue, oConverterOptions, oSanitizerRules));
 			
 			// iTop 3.0+, enforce plain text field to be styled with standard HTML rules
 			oValueElem.addClass('ibo-is-html-content');
             
             // Enable image zoom-in
-            if(iImageMaxWidth !== 0)
-            {
-	            oValueElem.find('img').each(function() {
-					if ($(this).width() > iImageMaxWidth)
-					{
-						$(this).css({'max-width': iImageMaxWidth + 'px', width: '', height: '', 'max-height': ''});
-					}
-					$(this).addClass('inline-image').attr('href', $(this).attr('src'));
-				}).magnificPopup({type: 'image', closeOnContentClick: true });
-			}
+            MolkobainMarkdownViewer.EnableImageZoom(oValueElem, iImageMaxWidth);
         }
         // ... otherwise show preview mode
         else
@@ -143,28 +137,39 @@ $(document).ready(function(){
                 oEvent.preventDefault();
                 
                 // Retrieve value
-                var sMarkdownValue = '';
-                var oInputZoneElem = me.find('.field_input_zone');
-                if(oInputZoneElem.hasClass('field_input_html') === true)
-                {
-                    sMarkdownValue = $('<div></div>').html(oInputZoneElem.find('textarea[name="attr_' + sFieldAttCode + '"]').val()).text();
-                }
-                else
-                {
-                    sMarkdownValue = oInputZoneElem.find('textarea[name="attr_' + sFieldAttCode + '"]').val();
-                }
-                var oConverter = new showdown.Converter({$sConverterOptionsAsJSON});
-	            var sHTMLValue = oConverter.makeHtml(sMarkdownValue);
+                var oInputElem = me.find('.field_input_zone textarea').first();
+                var sMarkdownValue = MolkobainMarkdownViewer.GetMarkdownFromEditedValue(oInputElem, sFieldFormat);
 	            
 	            // Show preview
-	            $('<div title="{$sPreviewTitle}" class="mmv-preview-content ibo-is-html-content">'+sHTMLValue+'</div>').dialog({
-	                modal: true,
-	                minWidth: 500,
-	                maxWidth: window.innerHeight * 0.8,
-	                maxHeight: window.innerHeight * 0.8,	                
-	                buttons:[ {text: '{$sPreviewCloseLabel}', click: function() { $(this).dialog('close'); } }], 
-	                close: function() { $(this).remove(); }
-	            })
+	            CombodoModal.OpenModal({
+	                title: '{$sPreviewTitle}',
+	                // Note: Otherwise the modal is as narrow as possible, as its content is only made of blocks
+	                size: {
+	                    width: 500,
+	                },
+	                classes: {
+	                    'ui-dialog-content': 'mmv-preview-content ibo-is-html-content',
+	                },
+	                content: '',
+	                // Note: Called before the modal is opened, so it is sized and positioned with the preview
+	                callback_on_content_loaded: function(oModalElem) {
+	                    oModalElem.append(MolkobainMarkdownViewer.MakeHtml(sMarkdownValue, oConverterOptions, oSanitizerRules));
+	                },
+	                buttons: {
+	                    close: {
+	                        text: '{$sPreviewCloseLabel}',
+	                        classes: ['ibo-is-regular', 'ibo-is-neutral'],
+	                        callback_on_click: function() {
+	                            $(this).dialog('close');
+	                        },
+	                    },
+	                },
+	                extra_options: {
+	                    callback_on_modal_close: function() {
+	                        $(this).dialog('destroy');
+	                    },
+	                },
+	            });
             });
         }
     });
