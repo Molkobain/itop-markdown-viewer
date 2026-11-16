@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [1.6.1] - 2026-11-16
+### Changed
+  * Remove unused use statements
+
 ## [1.6.0] - 2026-10-04
 ### Changed
   * Fix rendering of HTML attributes (edited with the rich text editor) which were rendered on a single line
@@ -55,7 +59,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
   * First version
 
-[Unreleased]: https://github.com/Molkobain/itop-markdown-viewer/compare/v1.6.0...HEAD
+[Unreleased]: https://github.com/Molkobain/itop-markdown-viewer/compare/v1.6.1...HEAD
+[1.6.1]: https://github.com/Molkobain/itop-markdown-viewer/releases/tag/v1.6.1
 [1.6.0]: https://github.com/Molkobain/itop-markdown-viewer/releases/tag/v1.6.0
 [1.5.0]: https://github.com/Molkobain/itop-markdown-viewer/releases/tag/v1.5.0
 [1.4.0]: https://github.com/Molkobain/itop-markdown-viewer/releases/tag/v1.4.0
