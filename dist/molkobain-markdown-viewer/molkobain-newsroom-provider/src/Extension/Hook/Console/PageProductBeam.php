@@ -11,8 +11,6 @@ namespace Molkobain\iTop\Extension\NewsroomProvider\Hook\Console;
 
 use Combodo\iTop\Application\Helper\Session;
 use iBackofficeReadyScriptExtension;
-use iPageUIExtension;
-use iTopWebPage;
 use Molkobain\iTop\Extension\NewsroomProvider\Helper\ConfigHelper;
 use Molkobain\iTop\Extension\NewsroomProvider\Core\MolkobainNewsroomProvider;
 use UserRights;
